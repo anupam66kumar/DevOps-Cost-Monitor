@@ -1,0 +1,231 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "id": 100,
+      "title": "Executive Summary & Month-End Cost Projections",
+      "type": "row"
+    },
+    {
+      "id": 1,
+      "title": "Total Multi-Cloud Spend (MTD)",
+      "type": "stat",
+      "gridPos": { "h": 5, "w": 6, "x": 0, "y": 1 },
+      "datasource": "PostgreSQL-CostMonitor",
+      "targets": [
+        {
+          "rawSql": "SELECT COALESCE(sum(daily_cost), 0) as total_spend FROM cloud_daily_cost_history WHERE ('$Provider' IN ('All', '$__all') OR provider = '$Provider');",
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "currencyINR",
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "orange", "value": 30000 },
+              { "color": "red", "value": 50000 }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 2,
+      "title": "End-of-Month Projected Spend",
+      "type": "gauge",
+      "gridPos": { "h": 5, "w": 6, "x": 6, "y": 1 },
+      "datasource": "PostgreSQL-CostMonitor",
+      "targets": [
+        {
+          "rawSql": "SELECT round(COALESCE(sum(daily_cost), 0) * (31.0 / GREATEST(EXTRACT(DAY FROM CURRENT_DATE), 1)), 2) as projected_month_end FROM cloud_daily_cost_history WHERE ('$Provider' IN ('All', '$__all') OR provider = '$Provider');",
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "currencyINR",
+          "min": 0,
+          "max": 80000,
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 45000 },
+              { "color": "red", "value": 65000 }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 3,
+      "title": "Daily Burn Velocity (Last 7-Day Avg)",
+      "type": "stat",
+      "gridPos": { "h": 5, "w": 6, "x": 12, "y": 1 },
+      "datasource": "PostgreSQL-CostMonitor",
+      "targets": [
+        {
+          "rawSql": "SELECT round(COALESCE(avg(daily_cost), 0), 2) as avg_daily_cost FROM (SELECT usage_date, sum(daily_cost) as daily_cost FROM cloud_daily_cost_history WHERE ('$Provider' IN ('All', '$__all') OR provider = '$Provider') GROUP BY usage_date ORDER BY usage_date DESC LIMIT 7) recent;",
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "currencyINR",
+          "color": { "fixedColor": "light-blue", "mode": "fixed" }
+        }
+      }
+    },
+    {
+      "id": 4,
+      "title": "MinIO Local S3 Storage Cost",
+      "type": "stat",
+      "gridPos": { "h": 5, "w": 6, "x": 18, "y": 1 },
+      "datasource": "PostgreSQL-CostMonitor",
+      "targets": [
+        {
+          "rawSql": "SELECT COALESCE(cost, 0.00) FROM cloud_cost_snapshots WHERE provider = 'MinIO (Local S3)' ORDER BY collected_at DESC LIMIT 1;",
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "currencyINR",
+          "color": { "fixedColor": "purple", "mode": "fixed" }
+        }
+      }
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 6 },
+      "id": 101,
+      "title": "Historical Cost Trend Analysis & Trajectory",
+      "type": "row"
+    },
+    {
+      "id": 5,
+      "title": "Historical Daily Cost Trend by Provider",
+      "type": "barchart",
+      "gridPos": { "h": 8, "w": 14, "x": 0, "y": 7 },
+      "datasource": "PostgreSQL-CostMonitor",
+      "targets": [
+        {
+          "rawSql": "SELECT usage_date as time, daily_cost, provider FROM cloud_daily_cost_history WHERE ('$Provider' IN ('All', '$__all') OR provider = '$Provider') AND usage_date >= CURRENT_DATE - INTERVAL '30 days' ORDER BY usage_date ASC;",
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "currencyINR",
+          "custom": {
+            "stacking": { "mode": "normal", "group": "A" },
+            "fillOpacity": 85
+          }
+        }
+      }
+    },
+    {
+      "id": 6,
+      "title": "Spend Distribution by Cloud Provider",
+      "type": "piechart",
+      "gridPos": { "h": 8, "w": 10, "x": 14, "y": 7 },
+      "datasource": "PostgreSQL-CostMonitor",
+      "targets": [
+        {
+          "rawSql": "SELECT provider, round(sum(daily_cost), 2) as cost FROM cloud_daily_cost_history WHERE ('$Provider' IN ('All', '$__all') OR provider = '$Provider') GROUP BY provider;",
+          "format": "table"
+        }
+      ],
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "values": ["value", "percent"]
+        },
+        "pieType": "pie",
+        "reduceOptions": {
+          "calcs": [],
+          "fields": "",
+          "values": true
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "currencyINR",
+          "color": {
+            "mode": "palette-classic"
+          }
+        }
+      }
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 15 },
+      "id": 102,
+      "title": "Detailed Cloud Inventory & Resource Utilization",
+      "type": "row"
+    },
+    {
+      "id": 7,
+      "title": "Live Cloud Resource Inventory Breakdown",
+      "type": "table",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 16 },
+      "datasource": "PostgreSQL-CostMonitor",
+      "targets": [
+        {
+          "rawSql": "SELECT provider, resource_type, count, size_gb, estimated_cost as monthly_cost_inr FROM cloud_resource_inventory WHERE collected_at = (SELECT max(collected_at) FROM cloud_resource_inventory) AND ('$Provider' IN ('All', '$__all') OR provider = '$Provider') ORDER BY provider, resource_type;",
+          "format": "table"
+        }
+      ]
+    }
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": true,
+          "text": "All",
+          "value": "$__all"
+        },
+        "hide": 0,
+        "includeAll": true,
+        "allValue": "$__all",
+        "label": "Cloud Provider",
+        "multi": false,
+        "name": "Provider",
+        "options": [
+          { "selected": true, "text": "All", "value": "$__all" },
+          { "selected": false, "text": "Azure", "value": "Azure" },
+          { "selected": false, "text": "GCP", "value": "GCP" },
+          { "selected": false, "text": "MinIO (Local S3)", "value": "MinIO (Local S3)" }
+        ],
+        "type": "custom"
+      }
+    ]
+  },
+  "refresh": "1m",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["devops", "capstone", "multi-cloud", "cost-monitoring", "sprint4"],
+  "time": { "from": "now-30d", "to": "now" },
+  "timezone": "browser",
+  "title": "DevOps Multi-Cloud Resource & Cost Monitoring Dashboard",
+  "uid": "devops-cost-monitor"
+}
