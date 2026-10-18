@@ -1,62 +1,62 @@
 # **DevOps Multi-Cloud Resource & Cost Monitoring Dashboard**  ***By Anupam Kumar***
 
-[**DevOps Multi-Cloud Resource & Cost Monitoring Dashboard	1**](#heading=)
+[**DevOps Multi-Cloud Resource & Cost Monitoring Dashboard**](#heading=)
 
-[1\. Executive Summary & Project Objectives	2](#heading=)
+[1\. Executive Summary & Project Objectives](#heading=)
 
-[2\. End-to-End System Architecture	2](#heading=)
+[2\. End-to-End System Architecture](#heading=)
 
-[3\. Detailed Functionality & Operational Flow	4](#heading=)
+[3\. Detailed Functionality & Operational Flow](#heading=)
 
-[Phase 1: Scheduled Ingestion Trigger	4](#heading=)
+[Phase 1: Scheduled Ingestion Trigger](#heading=)
 
-[Phase 2: Multi-Cloud API Telemetry Extraction	4](#heading=)
+[Phase 2: Multi-Cloud API Telemetry Extraction](#heading=)
 
-[Phase 3: Data Normalization & Database Ingestion	5](#heading=)
+[Phase 3: Data Normalization & Database Ingestion](#heading=)
 
-[Phase 4: Observability & Trend Analysis	5](#heading=)
+[Phase 4: Observability & Trend Analysis](#heading=)
 
-[Phase 5: FinOps Policy Enforcement & Notification	5](#heading=)
+[Phase 5: FinOps Policy Enforcement & Notification](#heading=)
 
-[4\. Multi-Cloud Credential & Authentication Architecture	5](#heading=)
+[4\. Multi-Cloud Credential & Authentication Architecture](#heading=)
 
-[1\. Microsoft Azure Setup	6](#heading=)
+[1\. Microsoft Azure Setup](#heading=)
 
-[2\. Google Cloud Platform (GCP) Setup	6](#heading=)
+[2\. Google Cloud Platform (GCP) Setup](#heading=)
 
-[3\. MinIO (Local S3 Sandbox)	7](#heading=)
+[3\. MinIO (Local S3 Sandbox)](#heading=)
 
-[5\. Directory Structure & File Manifest	7](#heading=)
+[5\. Directory Structure & File Manifest](#heading=)
 
-[6\. Infrastructure & Container Components	7](#heading=)
+[6\. Infrastructure & Container Components](#heading=)
 
-[7\. Database Architecture & Schema Design	9](#heading=)
+[7\. Database Architecture & Schema Design](#heading=)
 
-[8\. Collector & FinOps Alert Source Code	10](#heading=)
+[8\. Collector & FinOps Alert Source Code](#heading=)
 
-[Collector Implementation (collector/main\_collector.py)	10](#heading=)
+[Collector Implementation (collector/main\_collector.py)](#heading=)
 
-[Alert Engine Implementation (collector/alert\_engine.py)	17](#heading=)
+[Alert Engine Implementation (collector/alert\_engine.py)](#heading=)
 
-[9\. Actual Telemetry Data Recorded	20](#heading=)
+[9\. Actual Telemetry Data Recorded](#heading=)
 
-[Verified Multi-Cloud Spend Distribution	20](#heading=)
+[Verified Multi-Cloud Spend Distribution](#heading=)
 
-[10\. Sprint-by-Sprint Execution Log	21](#heading=)
+[10\. Sprint-by-Sprint Execution Log](#heading=)
 
-[11\. Cost Optimization & FinOps Analysis	21](#heading=)
+[11\. Cost Optimization & FinOps Analysis](#heading=)
 
-[12\. Verification & Quickstart Runbook	22](#heading=)
+[12\. Verification & Quickstart Runbook](#heading=)
 
-[1\. Start the Environment	22](#heading=)
+[1\. Start the Environment](#heading=)
 
-[2\. Run Telemetry Ingestion	22](#heading=)
+[2\. Run Telemetry Ingestion](#heading=)
 
-[3\. Run FinOps Alert Evaluation	22](#heading=)
+[3\. Run FinOps Alert Evaluation](#heading=)
 
-[4\. Verify Database Records	22](#heading=)
+[4\. Verify Database Records](#heading=)
 
-[5\. Access Dashboards	22](#heading=)
+[5\. Access Dashboards](#heading=)
 
 # 
 
@@ -65,13 +65,15 @@
 Managing infrastructure costs and resource utilization across disparate public cloud providers presents significant operational friction. Cloud platforms employ non-standardized billing paradigms, isolated metrics APIs, and incompatible data schemas.  
 This project implements a centralized, production-grade **DevOps Multi-Cloud Resource and Cost Monitoring Dashboard**. It autonomously aggregates infrastructure inventory and financial telemetry across **Microsoft Azure**, **Google Cloud Platform (GCP)**, and local **MinIO (AWS S3-compatible storage)**.
 
-![][image1]
+<img width="1852" height="856" alt="carbon (8)" src="https://github.com/user-attachments/assets/b17e149d-ab7f-42b2-8bbf-b04540e536a6" />
+
 
 ## **2\. End-to-End System Architecture**
 
 The solution uses a decoupled architecture containerized with Docker Compose. The collector extracts multi-cloud metrics and normalizes the payloads into a local PostgreSQL engine, which serves as the data layer for Grafana and the FinOps alert engine.
 
-![][image2]
+<img width="4040" height="4840" alt="carbon (9)" src="https://github.com/user-attachments/assets/0bbf1d2c-ef5e-49b2-9efe-d91da511e3cd" />
+
 
 ## 
 
@@ -81,7 +83,8 @@ The solution uses a decoupled architecture containerized with Docker Compose. Th
 
 The monitoring and FinOps pipeline runs on a scheduled cadence through five automated phases:
 
-![][image3]
+<img width="3232" height="1640" alt="carbon (10)" src="https://github.com/user-attachments/assets/4bded53f-a052-404c-a8c8-5971f873729e" />
+
 
 ### 
 
@@ -132,7 +135,8 @@ $$ProjectedSpend=MTDSpend\times \left({\frac{31}{CurrentDayofMonth}}\right)$$
 
 Handling credentials securely across different cloud providers is critical in multi-cloud environments. The system avoids hardcoded secrets, using native authentication mechanisms and environment variables.
 
-![][image4]
+<img width="4096" height="2160" alt="carbon (11)" src="https://github.com/user-attachments/assets/e5813b59-333d-4fa3-b1d1-c4751a34bc94" />
+
 
 ### **1\. Microsoft Azure Setup**
 
@@ -175,7 +179,8 @@ MINIO\_BUCKET\_NAME="cost-monitor-data"
 
 ## **5\. Directory Structure & File Manifest**
 
-![][image5]
+<img width="4008" height="2160" alt="carbon (12)" src="https://github.com/user-attachments/assets/c5e1b926-4d1c-490b-8a0e-50d526472c36" />
+
 
 ## 
 
@@ -709,7 +714,8 @@ if \_\_name\_\_ \== "\_\_main\_\_":
 
 The following live metrics were verified across the pipeline, database, and dashboard:
 
-![][image6]
+<img width="4040" height="1788" alt="carbon (13)" src="https://github.com/user-attachments/assets/86c7b4f7-1078-40e1-ba43-8cbe21bee9f3" />
+
 
 ### **Verified Multi-Cloud Spend Distribution**
 
@@ -721,7 +727,8 @@ The following live metrics were verified across the pipeline, database, and dash
 
 ## **10\. Sprint-by-Sprint Execution Log**
 
-![][image7]
+<img width="4096" height="3204" alt="carbon (14)" src="https://github.com/user-attachments/assets/324ce62c-1c6e-4674-a8b6-235f80a497d5" />
+
 
 ## **11\. Cost Optimization & FinOps Analysis**
 
